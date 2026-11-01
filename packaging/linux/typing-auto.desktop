@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Typing Auto
+Comment=Local, visible keyboard text entry tool
+Exec=typing-auto
+Terminal=false
+Categories=Utility;Accessibility;
+Keywords=typing;keyboard;snippets;accessibility;
