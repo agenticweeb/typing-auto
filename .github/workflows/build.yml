@@ -67,6 +67,7 @@ jobs:
           rm -rf packaging/deb-root
           install -Dm755 dist/TypingAuto packaging/deb-root/opt/typing-auto/TypingAuto
           install -Dm644 packaging/linux/typing-auto.desktop packaging/deb-root/usr/share/applications/typing-auto.desktop
+          install -Dm644 packaging/linux/typing-auto.png packaging/deb-root/usr/share/icons/hicolor/256x256/apps/typing-auto.png
           mkdir -p packaging/deb-root/usr/bin
           ln -s /opt/typing-auto/TypingAuto packaging/deb-root/usr/bin/typing-auto
           install -d packaging/deb-root/DEBIAN
@@ -90,6 +91,8 @@ jobs:
           install -Dm755 dist/TypingAuto dist/TypingAuto.AppDir/usr/bin/typing-auto
           install -Dm644 packaging/linux/typing-auto.desktop dist/TypingAuto.AppDir/usr/share/applications/typing-auto.desktop
           install -Dm644 packaging/linux/typing-auto.desktop dist/TypingAuto.AppDir/typing-auto.desktop
+          install -Dm644 packaging/linux/typing-auto.png dist/TypingAuto.AppDir/usr/share/icons/hicolor/256x256/apps/typing-auto.png
+          install -Dm644 packaging/linux/typing-auto.png dist/TypingAuto.AppDir/typing-auto.png
           install -Dm755 packaging/linux/AppRun dist/TypingAuto.AppDir/AppRun
           curl -fsSL -o /tmp/appimagetool.AppImage https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
           chmod +x /tmp/appimagetool.AppImage
