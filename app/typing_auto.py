@@ -30,6 +30,7 @@ class App:
         self.cpm_var = tk.IntVar(value=360)
         self.jitter_var = tk.IntVar(value=8)
         self.countdown_var = tk.IntVar(value=3)
+        self.always_top_var = tk.BooleanVar(value=False)
         self._build_ui()
         self._refresh_list()
         self._register_hotkeys()
@@ -43,6 +44,7 @@ class App:
         header.pack(fill="x")
         ttk.Label(header, text="Typing Auto", font=("Segoe UI", 20, "bold")).pack(side="left")
         ttk.Label(header, text="LOCAL / VISIBLE / REVERSIBLE", foreground="#c75532").pack(side="right", pady=8)
+        ttk.Checkbutton(header, text="Always on top", variable=self.always_top_var, command=self._toggle_topmost).pack(side="right", padx=16)
         ttk.Label(outer, text="Pick a snippet, choose a pace, then click the field where it should go.").pack(anchor="w", pady=(0, 12))
 
         body = ttk.Frame(outer)
@@ -100,6 +102,9 @@ class App:
         ttk.Label(row, text=label, width=24).pack(side="left")
         ttk.Scale(row, from_=low, to=high, variable=variable, orient="horizontal").pack(side="left", fill="x", expand=True)
         ttk.Label(row, textvariable=variable, width=6).pack(side="right")
+
+    def _toggle_topmost(self):
+        self.root.attributes("-topmost", bool(self.always_top_var.get()))
 
     def _refresh_list(self, select=0):
         self.listbox.delete(0, tk.END)
