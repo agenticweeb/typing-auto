@@ -1,6 +1,6 @@
 # Typing Auto
 
-Typing Auto is a transparent, local-only snippet typer for Windows, macOS, and Linux. It sends ordinary OS-level keyboard events one character at a time instead of using the clipboard. It is intended for personal productivity, UI testing, accessibility experiments, and repetitive text-entry workflows where the target application permits automation.
+Typing Auto is a transparent, local-only desktop app for Windows and Linux, with source execution on macOS. It sends ordinary OS-level keyboard events one character at a time instead of using the clipboard. It is intended for personal productivity, UI testing, accessibility experiments, and repetitive text-entry workflows where the target application permits automation.
 
 It deliberately does **not** hide its activity, bypass anti-cheat or monitoring systems, inject into target processes, install a service, create persistence, or claim to be undetectable. The application has a visible window, an emergency stop, and an explicit status line while it is typing.
 
@@ -8,12 +8,18 @@ It deliberately does **not** hide its activity, bypass anti-cheat or monitoring 
 
 - Local JSON snippet storage in `~/.typing-auto/snippets.json`.
 - Per-snippet global hotkeys through `pynput`.
+- A local test pad for verifying text, line breaks, and timing without targeting another app.
+- A target-picker flow: hide the window, click a field you control, and type into that focused field.
 - Character-by-character OS keyboard events.
 - Adjustable characters-per-minute timing.
 - Optional bounded timing variation for UI and typing tests.
 - Countdown before typing and `Esc`/Stop cancellation.
 - No network code, telemetry, updater, background service, or scheduled task.
 - Cross-platform Python implementation with documented OS permissions.
+
+## Download the desktop app
+
+Windows `.zip` and Linux `.tar.gz` builds are published on the [GitHub Releases page](https://github.com/agenticweeb/typing-auto/releases) by the tagged GitHub Actions workflow. Extract the download and launch `TypingAuto.exe` on Windows or `TypingAuto` on Linux. The app opens a GUI; the command line is only needed for source development.
 
 ## Install from source
 
@@ -36,6 +42,15 @@ Use `pynput` global-hotkey notation, for example `<ctrl>+<alt>+t`, `<shift>+<f8>
 ## Safety model
 
 The tool only calls the public keyboard abstraction provided by `pynput`. It does not read target-window contents, inspect other processes, modify the registry, create a startup entry, or make network requests. Review `app/typing_auto.py` before running it. Use only where you have permission to automate the target application.
+
+## Build a local executable
+
+```bash
+python -m pip install -r requirements-dev.txt
+bash scripts/build.sh
+```
+
+The same build is run for Windows and Linux in `.github/workflows/build.yml`.
 
 ## Project layout
 

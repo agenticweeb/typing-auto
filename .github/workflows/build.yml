@@ -1,0 +1,56 @@
+name: Build desktop apps
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: TypingAuto-windows
+          - os: ubuntu-latest
+            artifact: TypingAuto-linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Build executable
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name TypingAuto run_app.py
+      - name: Package Linux download
+        if: runner.os == 'Linux'
+        run: tar -C dist -czf TypingAuto-linux.tar.gz TypingAuto
+      - name: Package Windows download
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist/TypingAuto.exe -DestinationPath TypingAuto-windows.zip
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            dist/TypingAuto*
+            TypingAuto-*.tar.gz
+            TypingAuto-*.zip
+      - name: Publish Linux release asset
+        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: TypingAuto-linux.tar.gz
+          generate_release_notes: true
+      - name: Publish Windows release asset
+        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Windows'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: TypingAuto-windows.zip
+          generate_release_notes: true
