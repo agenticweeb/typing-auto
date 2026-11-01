@@ -47,3 +47,7 @@ The tool only calls the public keyboard abstraction provided by `pynput`. It doe
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Deploy the documentation site
+
+The `site/` directory is a plain static site. In Vercel, connect this repository and set the project Root Directory to `site`; no build command or environment variable is required. Every push to `main` can then publish the documentation automatically.
