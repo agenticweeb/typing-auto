@@ -17,8 +17,8 @@ class App:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Typing Auto")
-        self.root.geometry("860x650")
-        self.root.minsize(740, 540)
+        self.root.geometry("980x720")
+        self.root.minsize(820, 620)
         self.store = SnippetStore()
         self.snippets = self.store.load()
         self.stop_event = threading.Event()
@@ -26,85 +26,146 @@ class App:
         self.hotkey_listener = None
         self.pick_listener = None
         self.reveal_after_typing = False
+        self.dark_mode = True
         self.status_var = tk.StringVar(value="Ready")
+        self.theme_button_var = tk.StringVar(value="LIGHT MODE")
         self.cpm_var = tk.IntVar(value=360)
         self.jitter_var = tk.IntVar(value=8)
         self.countdown_var = tk.IntVar(value=3)
         self.always_top_var = tk.BooleanVar(value=False)
         self._build_ui()
         self._refresh_list()
+        self._apply_theme()
         self._register_hotkeys()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.bind("<Escape>", lambda _event: self.stop())
 
     def _build_ui(self):
-        outer = ttk.Frame(self.root, padding=16)
-        outer.pack(fill="both", expand=True)
-        header = ttk.Frame(outer)
-        header.pack(fill="x")
-        ttk.Label(header, text="Typing Auto", font=("Segoe UI", 20, "bold")).pack(side="left")
-        ttk.Label(header, text="LOCAL / VISIBLE / REVERSIBLE", foreground="#c75532").pack(side="right", pady=8)
-        ttk.Checkbutton(header, text="Always on top", variable=self.always_top_var, command=self._toggle_topmost).pack(side="right", padx=16)
-        ttk.Label(outer, text="Pick a snippet, choose a pace, then click the field where it should go.").pack(anchor="w", pady=(0, 12))
+        self.outer = ttk.Frame(self.root, padding=22)
+        self.outer.pack(fill="both", expand=True)
 
-        body = ttk.Frame(outer)
+        header = ttk.Frame(self.outer)
+        header.pack(fill="x", pady=(0, 18))
+        brand = ttk.Frame(header)
+        brand.pack(side="left")
+        ttk.Label(brand, text="TA", style="Brand.TLabel").pack(side="left", padx=(0, 12))
+        ttk.Label(brand, text="Typing Auto", style="Title.TLabel").pack(anchor="w")
+        ttk.Label(brand, text="LOCAL TEXT / OS-LEVEL INPUT", style="Eyebrow.TLabel").pack(anchor="w")
+        ttk.Button(header, textvariable=self.theme_button_var, command=self.toggle_theme, style="Quiet.TButton").pack(side="right", padx=(10, 0))
+        ttk.Checkbutton(header, text="Always on top", variable=self.always_top_var, command=self._toggle_topmost).pack(side="right")
+
+        intro = ttk.Frame(self.outer)
+        intro.pack(fill="x", pady=(0, 16))
+        ttk.Label(intro, text="Your reusable words, ready when you are.", style="Heading.TLabel").pack(anchor="w")
+        ttk.Label(intro, text="Choose a snippet, tune the pace, and send it to the field you control.", style="Muted.TLabel").pack(anchor="w", pady=(4, 0))
+
+        body = ttk.Frame(self.outer)
         body.pack(fill="both", expand=True)
-        left = ttk.Frame(body)
-        left.pack(side="left", fill="y", padx=(0, 12))
-        ttk.Label(left, text="Snippets").pack(anchor="w")
-        self.listbox = tk.Listbox(left, width=28, height=14, exportselection=False)
-        self.listbox.pack(fill="y", expand=True, pady=6)
+        left = ttk.Frame(body, style="Panel.TFrame", padding=14)
+        left.pack(side="left", fill="y", padx=(0, 14))
+        ttk.Label(left, text="SNIPPETS", style="Eyebrow.TLabel").pack(anchor="w")
+        ttk.Label(left, text="Saved locally", style="Muted.TLabel").pack(anchor="w", pady=(3, 10))
+        self.listbox = tk.Listbox(left, width=28, height=15, exportselection=False, relief="flat", borderwidth=0, highlightthickness=0, activestyle="none")
+        self.listbox.pack(fill="y", expand=True, pady=(0, 12))
         self.listbox.bind("<<ListboxSelect>>", self._select)
         buttons = ttk.Frame(left)
         buttons.pack(fill="x")
-        ttk.Button(buttons, text="Add", command=self.add).pack(side="left", fill="x", expand=True)
-        ttk.Button(buttons, text="Delete", command=self.delete).pack(side="left", fill="x", expand=True, padx=(6, 0))
+        ttk.Button(buttons, text="＋ Add", command=self.add).pack(side="left", fill="x", expand=True)
+        ttk.Button(buttons, text="Delete", command=self.delete, style="Quiet.TButton").pack(side="left", fill="x", expand=True, padx=(7, 0))
 
         right = ttk.Frame(body)
         right.pack(side="left", fill="both", expand=True)
-        ttk.Label(right, text="Name").pack(anchor="w")
-        self.name = ttk.Entry(right)
-        self.name.pack(fill="x", pady=(2, 8))
-        ttk.Label(right, text="Text").pack(anchor="w")
-        self.text = tk.Text(right, height=9, wrap="word", undo=True)
-        self.text.pack(fill="both", expand=True, pady=(2, 8))
-        row = ttk.Frame(right)
-        row.pack(fill="x")
-        ttk.Label(row, text="Hotkey").pack(side="left")
-        self.hotkey = ttk.Entry(row, width=24)
-        self.hotkey.pack(side="left", padx=(6, 14))
-        ttk.Label(row, text="Example: <ctrl>+<alt>+t").pack(side="left")
-        primary = ttk.Frame(right)
-        primary.pack(fill="x", pady=8)
-        ttk.Button(primary, text="Pick target and type", command=self.pick_target).pack(side="left")
-        ttk.Button(primary, text="Type selected", command=self.start_selected).pack(side="left", padx=6)
-        ttk.Button(primary, text="Save snippet", command=self.save_current).pack(side="right")
-        ttk.Label(right, text="Click the target-picker button, then click the chat box or field where the selected snippet should go.", foreground="#555", wraplength=560).pack(anchor="w")
+        editor = ttk.Frame(right, style="Panel.TFrame", padding=18)
+        editor.pack(fill="both", expand=True)
+        ttk.Label(editor, text="SNIPPET EDITOR", style="Eyebrow.TLabel").pack(anchor="w")
+        self.name = ttk.Entry(editor, font=("Segoe UI", 15))
+        self.name.pack(fill="x", pady=(8, 12))
+        ttk.Label(editor, text="Text to type", style="Muted.TLabel").pack(anchor="w")
+        self.text = tk.Text(editor, height=9, wrap="word", undo=True, relief="flat", borderwidth=0, padx=12, pady=12, font=("Segoe UI", 12))
+        self.text.pack(fill="both", expand=True, pady=(5, 12))
+        hotkey_row = ttk.Frame(editor)
+        hotkey_row.pack(fill="x")
+        ttk.Label(hotkey_row, text="Global hotkey", style="Muted.TLabel").pack(side="left")
+        self.hotkey = ttk.Entry(hotkey_row, width=25)
+        self.hotkey.pack(side="left", padx=(10, 0))
+        ttk.Label(hotkey_row, text="e.g. <ctrl>+<alt>+t", style="Muted.TLabel").pack(side="left", padx=(10, 0))
+        actions = ttk.Frame(editor)
+        actions.pack(fill="x", pady=(18, 0))
+        ttk.Button(actions, text="Pick target and type", command=self.pick_target, style="Accent.TButton").pack(side="left")
+        ttk.Button(actions, text="Type selected", command=self.start_selected).pack(side="left", padx=8)
+        ttk.Button(actions, text="Save snippet", command=self.save_current, style="Quiet.TButton").pack(side="right")
 
-        test = ttk.LabelFrame(outer, text="Local test pad", padding=8)
-        test.pack(fill="x", pady=(12, 0))
-        ttk.Label(test, text="Use this box to verify timing and line breaks without sending input to another app.").pack(anchor="w")
-        self.test_pad = tk.Text(test, height=3, wrap="word")
-        self.test_pad.pack(fill="x", pady=(6, 0))
-        ttk.Button(test, text="Type into test pad", command=self.start_test_pad).pack(anchor="e", pady=(6, 0))
+        test = ttk.Frame(self.outer, style="Panel.TFrame", padding=14)
+        test.pack(fill="x", pady=(14, 0))
+        test_header = ttk.Frame(test)
+        test_header.pack(fill="x")
+        ttk.Label(test_header, text="LOCAL TEST PAD", style="Eyebrow.TLabel").pack(side="left")
+        ttk.Label(test_header, text="No other app receives input", style="Muted.TLabel").pack(side="right")
+        self.test_pad = tk.Text(test, height=3, wrap="word", relief="flat", borderwidth=0, padx=10, pady=8, font=("Segoe UI", 11))
+        self.test_pad.pack(fill="x", pady=(8, 7))
+        ttk.Button(test, text="Type into test pad", command=self.start_test_pad).pack(anchor="e")
 
-        controls = ttk.LabelFrame(outer, text="Typing profile", padding=10)
-        controls.pack(fill="x", pady=(12, 0))
+        controls = ttk.Frame(self.outer, style="Panel.TFrame", padding=14)
+        controls.pack(fill="x", pady=(14, 0))
+        controls_header = ttk.Frame(controls)
+        controls_header.pack(fill="x")
+        ttk.Label(controls_header, text="TYPING PROFILE", style="Eyebrow.TLabel").pack(side="left")
+        ttk.Label(controls_header, textvariable=self.status_var, style="Status.TLabel").pack(side="right")
         self._scale(controls, "Characters per minute", self.cpm_var, 30, 1200)
-        self._scale(controls, "Timing variation (%)", self.jitter_var, 0, 30)
-        self._scale(controls, "Countdown (seconds)", self.countdown_var, 0, 10)
-        actions = ttk.Frame(controls)
-        actions.pack(fill="x", pady=(8, 0))
-        ttk.Button(actions, text="STOP", command=self.stop).pack(side="left")
-        ttk.Label(actions, textvariable=self.status_var).pack(side="left", padx=10)
-        ttk.Label(outer, text="Esc stops typing. Picking a target hides this window, waits for one click, then types visibly into that focused field.", foreground="#555").pack(anchor="w", pady=(10, 0))
+        self._scale(controls, "Timing variation", self.jitter_var, 0, 30)
+        self._scale(controls, "Countdown", self.countdown_var, 0, 10)
+        ttk.Button(controls, text="STOP / ESC", command=self.stop, style="Danger.TButton").pack(anchor="w", pady=(8, 0))
 
     def _scale(self, parent, label, variable, low, high):
         row = ttk.Frame(parent)
-        row.pack(fill="x")
-        ttk.Label(row, text=label, width=24).pack(side="left")
+        row.pack(fill="x", pady=(7, 0))
+        ttk.Label(row, text=label, width=24, style="Muted.TLabel").pack(side="left")
         ttk.Scale(row, from_=low, to=high, variable=variable, orient="horizontal").pack(side="left", fill="x", expand=True)
-        ttk.Label(row, textvariable=variable, width=6).pack(side="right")
+        ttk.Label(row, textvariable=variable, width=6, style="Value.TLabel").pack(side="right", padx=(10, 0))
+
+    def _apply_theme(self):
+        colors = {
+            "bg": "#101318" if self.dark_mode else "#f4f6f8",
+            "panel": "#191e26" if self.dark_mode else "#ffffff",
+            "field": "#252c37" if self.dark_mode else "#eef1f4",
+            "text": "#f6f7f9" if self.dark_mode else "#17202a",
+            "muted": "#98a4b3" if self.dark_mode else "#657080",
+            "accent": "#c9f45b",
+            "accent_text": "#101318",
+            "blue": "#6ca9ff",
+            "danger": "#ff7a73",
+            "select": "#314152" if self.dark_mode else "#dce9f7",
+        }
+        self.root.configure(background=colors["bg"])
+        style = ttk.Style(self.root)
+        style.theme_use("clam")
+        style.configure("TFrame", background=colors["bg"])
+        style.configure("Panel.TFrame", background=colors["panel"])
+        style.configure("TLabel", background=colors["bg"], foreground=colors["text"])
+        style.configure("Brand.TLabel", background=colors["accent"], foreground=colors["accent_text"], font=("Segoe UI", 15, "bold"), padding=(8, 5))
+        style.configure("Title.TLabel", background=colors["bg"], foreground=colors["text"], font=("Segoe UI", 19, "bold"))
+        style.configure("Heading.TLabel", background=colors["bg"], foreground=colors["text"], font=("Segoe UI", 25, "bold"))
+        style.configure("Eyebrow.TLabel", background=colors["panel"], foreground=colors["blue"], font=("Segoe UI", 9, "bold"))
+        style.configure("Muted.TLabel", background=colors["panel"], foreground=colors["muted"], font=("Segoe UI", 10))
+        style.configure("Status.TLabel", background=colors["panel"], foreground=colors["accent"], font=("Segoe UI", 10, "bold"))
+        style.configure("Value.TLabel", background=colors["panel"], foreground=colors["text"], font=("Segoe UI", 10, "bold"))
+        style.configure("TButton", background=colors["field"], foreground=colors["text"], borderwidth=0, padding=(12, 8), font=("Segoe UI", 10, "bold"))
+        style.map("TButton", background=[("active", colors["select"])])
+        style.configure("Accent.TButton", background=colors["accent"], foreground=colors["accent_text"])
+        style.map("Accent.TButton", background=[("active", "#e1ff83")])
+        style.configure("Quiet.TButton", background=colors["field"], foreground=colors["muted"])
+        style.configure("Danger.TButton", background=colors["danger"], foreground="#201314")
+        style.configure("TCheckbutton", background=colors["bg"], foreground=colors["muted"])
+        style.configure("TEntry", fieldbackground=colors["field"], foreground=colors["text"], insertcolor=colors["text"], borderwidth=0, padding=9)
+        style.configure("Horizontal.TScale", background=colors["panel"], troughcolor=colors["field"], sliderlength=18)
+        self.listbox.configure(background=colors["field"], foreground=colors["text"], selectbackground=colors["accent"], selectforeground=colors["accent_text"])
+        for widget in (self.text, self.test_pad):
+            widget.configure(background=colors["field"], foreground=colors["text"], insertbackground=colors["text"], selectbackground=colors["blue"], selectforeground="#ffffff")
+        self.theme_button_var.set("DARK MODE" if not self.dark_mode else "LIGHT MODE")
+
+    def toggle_theme(self):
+        self.dark_mode = not self.dark_mode
+        self._apply_theme()
 
     def _toggle_topmost(self):
         self.root.attributes("-topmost", bool(self.always_top_var.get()))
@@ -123,9 +184,12 @@ class App:
         if not selection:
             return
         item = self.snippets[selection[0]]
-        self.name.delete(0, tk.END); self.name.insert(0, item.name)
-        self.text.delete("1.0", tk.END); self.text.insert("1.0", item.text)
-        self.hotkey.delete(0, tk.END); self.hotkey.insert(0, item.hotkey)
+        self.name.delete(0, tk.END)
+        self.name.insert(0, item.name)
+        self.text.delete("1.0", tk.END)
+        self.text.insert("1.0", item.text)
+        self.hotkey.delete(0, tk.END)
+        self.hotkey.insert(0, item.hotkey)
 
     def add(self):
         self.snippets.append(Snippet("New snippet", "", ""))
@@ -143,9 +207,11 @@ class App:
     def save_current(self):
         selection = self.listbox.curselection()
         if not selection:
-            self.add(); selection = self.listbox.curselection()
+            self.add()
+            selection = self.listbox.curselection()
         i = selection[0]
-        self.snippets[i] = Snippet(self.name.get().strip() or "Unnamed", self.text.get("1.0", "end-1c"), self.hotkey.get().strip())
+        hotkey = self.hotkey.get().strip()
+        self.snippets[i] = Snippet(self.name.get().strip() or "Unnamed", self.text.get("1.0", "end-1c"), hotkey)
         self.store.save(self.snippets)
         self._refresh_list(i)
         self._register_hotkeys()
@@ -211,9 +277,20 @@ class App:
         return False
 
     def _run_profile(self, text, cpm, jitter, countdown, stop_event):
-        TypingEngine(stop_event, lambda s: self.root.after(0, self.status_var.set, s)).type_text(text, cpm, jitter, countdown)
-        if self.reveal_after_typing:
-            self.root.after(0, self.root.deiconify)
+        try:
+            TypingEngine(stop_event, lambda s: self.root.after(0, self.status_var.set, s)).type_text(text, cpm, jitter, countdown)
+        finally:
+            if self.reveal_after_typing:
+                self.root.after(0, self.root.deiconify)
+
+    def _valid_hotkey(self, value: str) -> bool:
+        if not value or keyboard is None:
+            return bool(not value)
+        try:
+            keyboard.HotKey.parse(value)
+            return True
+        except (ValueError, TypeError):
+            return False
 
     def _register_hotkeys(self):
         if self.hotkey_listener:
@@ -221,10 +298,23 @@ class App:
             self.hotkey_listener = None
         if keyboard is None:
             return
-        mapping = {x.hotkey: (lambda s=x: self.root.after(0, self._start, s.text)) for x in self.snippets if x.hotkey}
+        invalid = []
+        mapping = {}
+        for snippet in self.snippets:
+            if not snippet.hotkey:
+                continue
+            if not self._valid_hotkey(snippet.hotkey):
+                invalid.append(snippet.name)
+                continue
+            mapping[snippet.hotkey] = lambda s=snippet: self.root.after(0, self._start, s.text)
+        if invalid:
+            self.status_var.set("Invalid hotkey skipped: " + ", ".join(invalid[:2]))
         if mapping:
-            self.hotkey_listener = keyboard.GlobalHotKeys(mapping)
-            self.hotkey_listener.start()
+            try:
+                self.hotkey_listener = keyboard.GlobalHotKeys(mapping)
+                self.hotkey_listener.start()
+            except (ValueError, TypeError) as exc:
+                self.status_var.set(f"Hotkeys unavailable: {exc}")
 
     def stop(self):
         self.stop_event.set()

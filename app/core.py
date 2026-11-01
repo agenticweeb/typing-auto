@@ -30,10 +30,16 @@ class SnippetStore:
 
     def load(self) -> list[Snippet]:
         if not self.path.exists():
-            return [Snippet("Example", "Replace this with your own text.", "<ctrl>+<alt>+t")]
+            return [Snippet("Example", "Welcome to Typing Auto. Edit this snippet, then save it.", "")]
         try:
             raw = json.loads(self.path.read_text(encoding="utf-8"))
-            return [Snippet(str(x["name"]), str(x["text"]), str(x.get("hotkey", ""))) for x in raw]
+            if not isinstance(raw, list):
+                return []
+            return [
+                Snippet(str(x.get("name", "Unnamed")), str(x.get("text", "")), str(x.get("hotkey", "")))
+                for x in raw
+                if isinstance(x, dict)
+            ]
         except (OSError, ValueError, KeyError, TypeError):
             return []
 

@@ -1,22 +1,53 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Typing Auto is a transparent local keyboard tool with Windows and Linux desktop builds.">
-  <title>Typing Auto / a small keyboard instrument</title>
+  <meta name="description" content="Typing Auto is a local desktop app for reusable snippets and visible, character-by-character typing.">
+  <title>Typing Auto — reusable words, ready when you are</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="topline"><span>TA–01</span><span>DESKTOP UTILITY / 2026</span><span>LOCAL FIRST</span></div>
-  <header class="masthead wrap"><a class="wordmark" href="#top">Typing<br><i>Auto</i></a><div class="mast-meta"><span>SNIPPETS<br><b>01—∞</b></span><span>INPUT<br><b>OS LEVEL</b></span><a href="https://github.com/agenticweeb/typing-auto">SOURCE ↗</a></div></header>
+  <div class="noise"></div>
+  <header class="site-header wrap">
+    <a class="brand" href="#top" aria-label="Typing Auto home"><span class="brand-mark">TA</span><span>Typing <em>Auto</em></span></a>
+    <nav class="nav" aria-label="Main navigation"><a href="#features">Features</a><a href="#download">Download</a><a href="https://github.com/agenticweeb/typing-auto">Source ↗</a><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme"><span class="theme-icon">◐</span><span id="themeLabel">LIGHT</span></button></nav>
+  </header>
+
   <main id="top">
-    <section class="intro wrap"><div class="stamp">NOT A CLOUD SERVICE<br>NOT A MACRO MARKETPLACE</div><h1>A small app for<br><i>repeating yourself.</i></h1><p class="intro-copy">Typing Auto keeps reusable text on your machine and sends it as ordinary keyboard events. Pick a snippet, set a pace, click a field. The app tells you what it is doing.</p><div class="intro-actions"><a class="button" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-setup.exe">DOWNLOAD FOR WINDOWS ↗</a><a href="#install">OTHER DOWNLOADS ↓</a></div></section>
-    <section id="how" class="work wrap"><div class="rail">01 / OPERATION</div><div class="work-body"><h2>Three moves.<br>No mystery.</h2><div class="steps"><div><b>01</b><strong>Choose</strong><p>Select a saved snippet or write a new one. Text lives in <code>~/.typing-auto</code>.</p></div><div><b>02</b><strong>Point</strong><p>Use the local test pad or press Pick target, then click the field you control.</p></div><div><b>03</b><strong>Release</strong><p>Set characters per minute. A countdown gives you time to focus the target. Esc always stops.</p></div></div></div></section>
-    <section class="specs wrap"><div class="rail">02 / SPECIFICATION</div><div class="spec-grid"><div class="spec-main"><div class="readout"><span>STATUS</span><b>VISIBLE</b></div><div class="readout"><span>STORAGE</span><b>LOCAL JSON</b></div><div class="readout"><span>NETWORK</span><b>NONE</b></div><div class="readout"><span>LICENSE</span><b>MIT</b></div></div><div class="spec-note"><p>The desktop build is deliberately boring in the best way: no account, no service, no hidden startup entry, no target-process injection.</p><p>Installers upgrade the app in place while your snippets stay in <code>~/.typing-auto</code> or <code>%USERPROFILE%\.typing-auto</code>.</p></div></div></section>
-    <section id="install" class="install wrap"><div class="rail">03 / INSTALL</div><div class="install-body"><h2>Download the app.<br>Launch it directly.</h2><div class="download-row"><a class="download" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-setup.exe"><span>WINDOWS / INSTALLER</span><b>SETUP EXE ↗</b></a><a class="download" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-linux.AppImage"><span>LINUX / APPIMAGE</span><b>DOWNLOAD ↗</b></a><a class="download" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-linux.deb"><span>LINUX / DEBIAN</span><b>DOWNLOAD ↗</b></a><a class="download" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-portable.zip"><span>WINDOWS / PORTABLE</span><b>ZIP ↗</b></a></div><p class="small-note">The Windows installer creates shortcuts and can upgrade an existing installation. Linux users can choose AppImage for a portable launch or Debian for package-managed installation. Your snippets remain outside the application files. <a href="https://github.com/agenticweeb/typing-auto">Read the source ↗</a></p></div></section>
-    <section class="boundary wrap"><div class="rail">04 / BOUNDARY</div><div><h2>Privacy without pretending<br>to be invisible.</h2><p>Typing Auto is for places where you have permission to automate: your own forms, test fixtures, accessibility experiments, and repetitive text entry. It does not attempt to bypass anti-cheat, monitoring, access controls, or application rules.</p><a class="text-button" href="https://github.com/agenticweeb/typing-auto/blob/main/README.md">READ THE SAFETY MODEL ↗</a></div></section>
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> DESKTOP TOOL / LOCAL FIRST</div>
+        <h1>Stop rewriting<br><span>the same things.</span></h1>
+        <p class="hero-lede">Typing Auto keeps your reusable text close and sends it one visible character at a time. No clipboard gymnastics. No account. Just your words, ready when you are.</p>
+        <div class="hero-actions"><a class="button primary" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-setup.exe">Download for Windows <span>↗</span></a><a class="text-link" href="#download">See Linux builds <span>↓</span></a></div>
+        <div class="hero-meta"><span><b>01</b> local snippets</span><span><b>02</b> global hotkeys</span><span><b>03</b> emergency stop</span></div>
+      </div>
+      <div class="hero-visual"><div class="visual-glow"></div><img src="product-preview.png" alt="Typing Auto desktop app preview with snippets and typing controls"></div>
+    </section>
+
+    <section class="trust-strip"><div class="wrap trust-grid"><div><span class="trust-kicker">STORAGE</span><strong>Local JSON</strong><small>Your snippets stay on your machine.</small></div><div><span class="trust-kicker">INPUT</span><strong>OS-level keys</strong><small>Characters, tabs, and line breaks.</small></div><div><span class="trust-kicker">CONTROL</span><strong>Stop anytime</strong><small>Esc and Stop interrupt typing.</small></div><div><span class="trust-kicker">LICENSE</span><strong>MIT / open source</strong><small>Read every line on GitHub.</small></div></div></section>
+
+    <section id="features" class="section wrap"><div class="section-label">01 / BUILT FOR REPETITION</div><div class="section-content"><h2>A calmer way to<br><i>say it again.</i></h2><div class="feature-grid"><article><span class="feature-number">01</span><h3>Snippet shelf</h3><p>Keep replies, addresses, commands, and templates in one small local library. Edit them in place and save.</p></article><article><span class="feature-number">02</span><h3>Real key events</h3><p>Typing Auto sends ordinary keyboard events instead of silently pasting. Newlines and tabs are handled deliberately.</p></article><article><span class="feature-number">03</span><h3>Your pace</h3><p>Set characters per minute, add bounded timing variation, and use a countdown before the first keystroke.</p></article></div></div></section>
+
+    <section class="section showcase wrap"><div class="section-label">02 / A SMALL WORKFLOW</div><div class="section-content workflow"><div><span class="step-index">01</span><h3>Pick a snippet</h3><p>Choose the words you use more than once.</p></div><div class="connector">→</div><div><span class="step-index">02</span><h3>Point at your field</h3><p>Use the local test pad or click a field you control.</p></div><div class="connector">→</div><div><span class="step-index">03</span><h3>Let it type</h3><p>Watch the status line. Press Esc if you change your mind.</p></div></div></section>
+
+    <section id="download" class="download-section"><div class="wrap download-inner"><div><div class="eyebrow">03 / DOWNLOAD</div><h2>Install once.<br><span>Keep moving.</span></h2><p>Choose the build that fits your machine. The installer and packages keep your snippets separate from the app files, so updates do not wipe your library.</p></div><div class="download-cards"><a class="download-card featured" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-setup.exe"><span class="platform">WINDOWS</span><strong>Setup installer</strong><small>Shortcuts · user-level upgrade</small><b>Download .exe ↗</b></a><a class="download-card" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-linux.AppImage"><span class="platform">LINUX</span><strong>AppImage</strong><small>Portable · launch directly</small><b>Download ↗</b></a><a class="download-card" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-linux.deb"><span class="platform">DEBIAN / UBUNTU</span><strong>Deb package</strong><small>Package-managed install</small><b>Download ↗</b></a><a class="download-card" href="https://github.com/agenticweeb/typing-auto/releases/latest/download/TypingAuto-windows-portable.zip"><span class="platform">WINDOWS</span><strong>Portable ZIP</strong><small>No install · unzip and run</small><b>Download ↗</b></a></div></div></section>
   </main>
-  <footer class="wrap footer"><span>Typing Auto / MIT</span><span>Built to be inspected.</span></footer>
+
+  <footer class="site-footer wrap"><a class="brand" href="#top"><span class="brand-mark">TA</span><span>Typing <em>Auto</em></span></a><span>Local by default · MIT licensed</span><a href="https://github.com/agenticweeb/typing-auto">GitHub ↗</a></footer>
+  <script>
+    const root = document.documentElement;
+    const button = document.getElementById('themeToggle');
+    const label = document.getElementById('themeLabel');
+    const saved = localStorage.getItem('typing-auto-theme');
+    if (saved) root.dataset.theme = saved;
+    function syncTheme() { label.textContent = root.dataset.theme === 'dark' ? 'LIGHT' : 'DARK'; }
+    syncTheme();
+    button.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('typing-auto-theme', root.dataset.theme); syncTheme(); });
+  </script>
 </body>
 </html>
