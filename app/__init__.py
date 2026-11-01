@@ -1,0 +1,1 @@
+"""Typing Auto application package."""
